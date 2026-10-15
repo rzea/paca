@@ -269,7 +269,7 @@ func (m *Manager) buildEnvironmentDeployment(name string, cfg sandbox.Environmen
 	containers := []corev1.Container{{
 		Name:         containerName,
 		Image:        image,
-		Args:         []string{"serve", "--host", "0.0.0.0", "--port", strconv.Itoa(sandbox.GooseServePort)},
+		Args:         []string{"serve", "--host", sandbox.GooseServeHost, "--port", strconv.Itoa(sandbox.GooseServePort)},
 		Env:          env,
 		Resources:    resources,
 		Ports:        []corev1.ContainerPort{{ContainerPort: int32(sandbox.GooseServePort)}},

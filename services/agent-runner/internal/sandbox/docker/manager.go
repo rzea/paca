@@ -269,7 +269,7 @@ func (m *Manager) Start(ctx context.Context, cfg sandbox.Config) (*sandbox.Handl
 
 	containerCfg := &container.Config{
 		Image: cfg.Image,
-		Cmd:   []string{"serve", "--host", "0.0.0.0", "--port", fmt.Sprintf("%d", sandbox.GooseServePort)},
+		Cmd:   []string{"serve", "--host", sandbox.GooseServeHost, "--port", fmt.Sprintf("%d", sandbox.GooseServePort)},
 		Env:   env,
 		Labels: map[string]string{
 			labelConvID:  cfg.ConversationID,

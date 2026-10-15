@@ -52,6 +52,24 @@ const (
 	// sandbox, Docker or Kubernetes alike.
 	GooseServePort = 3284
 
+	// GooseServeHost is the --host `goose serve` binds inside every
+	// sandbox, Docker or Kubernetes alike: the IPv6 wildcard "[::]", which
+	// Linux binds dual-stack (IPv4 connections arrive as v4-mapped
+	// addresses), so the server is reachable via the container/Pod's
+	// address of either family. The bracketing is load-bearing, not
+	// cosmetic: goose parses the address as a SocketAddr from
+	// "host:port", so a bare "::" yields "::3284" — invalid syntax, serve
+	// exits at startup. And "0.0.0.0" binds IPv4-only, which on an
+	// IPv6-only pod network is silently unreachable: agent-runner dials
+	// the Pod's IPv6 address, nothing ever answers, and every conversation
+	// fails with "none of ... became ready after 2m" (observed live on a
+	// single-stack IPv6 k3s cluster — including four orphaned sandbox Pods
+	// that sat "Running" for 8h, alive but eternally unreachable).
+	// Environments with IPv6 disabled entirely would fail this bind
+	// immediately instead — a fast, visible container exit beats the
+	// silent 2-minute readiness timeout.
+	GooseServeHost = "[::]"
+
 	// EnvironmentSSHPort is the port the real sshd
 	// internal/sandbox/environmentssh.go starts listens on inside a static
 	// environment's container/Pod — see services/agent-server/Dockerfile's

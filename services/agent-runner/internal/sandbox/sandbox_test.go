@@ -2,8 +2,10 @@ package sandbox
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/netip"
 	"strings"
 	"testing"
 	"time"
@@ -33,6 +35,27 @@ func TestGooseURL(t *testing.T) {
 				t.Errorf("GooseURL(%q, %d) = %q, want %q", tt.host, tt.port, got, tt.want)
 			}
 		})
+	}
+}
+
+// TestGooseServeHostParsesAsSocketAddr pins the syntax GooseServeHost must
+// satisfy: goose serve builds its bind address as SocketAddr from
+// "host:port" (goose-cli's handle_serve_command), so the host literal must
+// already carry its own IPv6 brackets — a bare "::" would produce "::3284"
+// and exit with "invalid socket address syntax" at startup, while an
+// unbracketed fix here would be invisible to every IPv4-only dev machine
+// and only fail on IPv6-only pod networks.
+func TestGooseServeHostParsesAsSocketAddr(t *testing.T) {
+	bindAddr := GooseServeHost + ":" + fmt.Sprint(GooseServePort)
+	addr, err := netip.ParseAddrPort(bindAddr)
+	if err != nil {
+		t.Fatalf("goose serve bind address %q does not parse as a SocketAddr (see goose-cli's handle_serve_command): %v", bindAddr, err)
+	}
+	if !addr.Addr().Is6() || !addr.Addr().IsUnspecified() {
+		t.Errorf("bind address should be the IPv6 wildcard for a dual-stack listener, got %v", addr.Addr())
+	}
+	if addr.Port() != GooseServePort {
+		t.Errorf("bind port = %d, want %d", addr.Port(), GooseServePort)
 	}
 }
 

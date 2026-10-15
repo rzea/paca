@@ -139,7 +139,7 @@ func (m *Manager) createAndStartEnvironmentContainer(ctx context.Context, image,
 
 	containerCfg := &container.Config{
 		Image: image,
-		Cmd:   []string{"serve", "--host", "0.0.0.0", "--port", fmt.Sprintf("%d", sandbox.GooseServePort)},
+		Cmd:   []string{"serve", "--host", sandbox.GooseServeHost, "--port", fmt.Sprintf("%d", sandbox.GooseServePort)},
 		Env:   env,
 		Labels: map[string]string{
 			labelEnvID:   cfg.EnvironmentID,

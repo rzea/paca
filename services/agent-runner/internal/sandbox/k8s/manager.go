@@ -312,7 +312,7 @@ func (m *Manager) Start(ctx context.Context, cfg sandbox.Config) (*sandbox.Handl
 	containers := []corev1.Container{{
 		Name:      containerName,
 		Image:     cfg.Image,
-		Args:      []string{"serve", "--host", "0.0.0.0", "--port", strconv.Itoa(sandbox.GooseServePort)},
+		Args:      []string{"serve", "--host", sandbox.GooseServeHost, "--port", strconv.Itoa(sandbox.GooseServePort)},
 		Env:       env,
 		Resources: resources,
 		Ports:     []corev1.ContainerPort{{ContainerPort: int32(sandbox.GooseServePort)}},

@@ -29,7 +29,8 @@ type Event struct {
 var ErrMaxToolCalls = errors.New("acp: exceeded max tool calls for this turn")
 
 // Client is a single conversation's connection to one container's
-// `goose serve --host 0.0.0.0 --port <p>` instance.
+// `goose serve --host "[::]" --port <p>` instance (see sandbox.GooseServeHost
+// for why the bind host is the bracketed IPv6 wildcard).
 //
 // Not safe for concurrent use — mirrors the one-container-per-conversation
 // model already in place for OpenHands (see docker_workspace.py), so
